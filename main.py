@@ -1,11 +1,12 @@
-#!/usr/bin/env python3
+#!/home/ilya/projects/Password-generator/.venv/bin/python
 import random
 import string
 import sys
 
-chars = [string.digits, string.ascii_uppercase, string.ascii_lowercase, string.punctuation]
-exit_words = ["q", "quit", "exit", "-", ""]
+import pyperclip
 
+chars = [string.digits, string.ascii_uppercase, string.ascii_lowercase, string.punctuation]
+exception_words = ["--help", "-h"]
 
 def pass_gen(length: int) -> str:
     ps_is_correct = False
@@ -14,32 +15,30 @@ def pass_gen(length: int) -> str:
 
         used_types = [0, 0, 0, 0]
 
-        pswd = ""
+        password = ""
 
-        for n in range(length):
-            Type = random.randint(0, len(chars)-1)
-            pswd += chars[Type][random.randint(0, len(chars[Type])-1)]
-            used_types[Type] += 1
+        for _ in range(length):
+            type_ = random.randint(0, len(chars)-1)
+            password += chars[type_][random.randint(0, len(chars[type_])-1)]
+            used_types[type_] += 1
         if 0 not in used_types:
             ps_is_correct = True
 
-    return pswd
+    return password
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        print(pass_gen(int(sys.argv[1])))
+        try:
+            length = int(sys.argv[1])
+        except:
+            if sys.argv[1] not in exception_words:
+                print(f"pass-gen: {sys.argv[1]} is not a pass-gen command. Check «pass-gen --help».")
+                sys.exit()
+            else:
+                print("pass-gen: Choose the length of the password.")
+                sys.exit()
+        password = pass_gen(int(sys.argv[1]))
+        pyperclip.copy(password)
+        print(password)
     else:
-        while True:
-            try:
-                length = (input("Введите длинну: "))
-
-                if length in exit_words:
-                    break
-
-                length = int(length)
-
-            except:
-                print("Неправильный ввод!!!")
-                continue
-            
-            print(pass_gen(length))
+        print("pass-gen: Choose the length of the password.")
