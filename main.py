@@ -1,14 +1,20 @@
-#!/home/ilya/projects/Password-generator/.venv/bin/python
+#!./.venv/bin/python
 import random
 import string
 import sys
 
 import pyperclip
+import click
 
 chars = [string.digits, string.ascii_uppercase, string.ascii_lowercase, string.punctuation]
 exception_words = ["--help", "-h"]
 
-def pass_gen(length: int) -> str:
+
+@click.command()
+@click.option('-l', '--length', default=12, help="Length of generated password")
+@click.option('-c', '--copy', is_flag=True, help="Copy generated password to clipboard")
+@click.option('-h', '--hide', is_flag=True, help="Hide generated password")
+def pass_gen(length: int, copy: bool, hide: bool):
     ps_is_correct = False
 
     while not ps_is_correct:
@@ -24,21 +30,13 @@ def pass_gen(length: int) -> str:
         if 0 not in used_types:
             ps_is_correct = True
 
-    return password
+    if hide:
+        click.echo(f"pass-gen:{'*' * length}")
+    else:
+        click.echo(password)
+    
+    if copy:
+        pyperclip.copy(password)
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        try:
-            length = int(sys.argv[1])
-        except:
-            if sys.argv[1] not in exception_words:
-                print(f"pass-gen: {sys.argv[1]} is not a pass-gen command. Check «pass-gen --help».")
-                sys.exit()
-            else:
-                print("pass-gen: Choose the length of the password.")
-                sys.exit()
-        password = pass_gen(int(sys.argv[1]))
-        pyperclip.copy(password)
-        print(password)
-    else:
-        print("pass-gen: Choose the length of the password.")
+    pass_gen()
