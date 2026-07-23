@@ -1,4 +1,4 @@
-#!./.venv/bin/python
+#! /home/ilya/Projects/Password-generator/.venv/bin/python3
 import random
 import string
 import sys
